@@ -1,0 +1,14 @@
+galaxy_info:
+  author: ljurgs
+  description:  Work-arounds for some annoying but non-serious bugs that result in error messages appearing in the system log
+  license: BSD-3-Clause
+  min_ansible_version: 2.9
+  platforms:
+    - name: Debian
+      versions: all
+    - name: Ubuntu
+      versions: all
+  galaxy_tags:
+    - debian
+    - ubuntu
+    - logging

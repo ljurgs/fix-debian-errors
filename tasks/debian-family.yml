@@ -1,0 +1,55 @@
+---
+- name: Test that the nfs-blkmap service exists
+  shell: "systemctl list-units --type=service --all | grep 'nfs-blkmap.service'"
+  register: nfs_blkmap_present
+  ignore_errors: True
+
+- name: Test that the ufw service exists
+  shell: "systemctl list-units --type=service --all | grep 'ufw.service'"
+  register: ufw_present
+  ignore_errors: True
+
+# https://askubuntu.com/questions/1239503/ubuntu-20-04-and-20-10-etc-securetty-no-such-file-or-directory
+- name: Fix issue where /etc/securetty is missing
+  copy:
+    src: files/securetty
+    dest: /etc/securetty
+    force: False
+    owner: root
+    group: root
+    mode: '0644'
+
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=850464
+- name: Fix issue where the blocklayoutdriver is not auto loaded by nfs-blkmap
+  block:
+    - name: Create the systemd override directory
+      file:
+        state: directory
+        path: /etc/systemd/system/nfs-blkmap.service.d
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Create the systemd override file
+      template:
+        src: nfs-blkmap.service.d.override.conf.j2
+        dest: /etc/systemd/system/nfs-blkmap.service.d/override.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - reload systemd
+        - restart nfs-blkmap
+  when: nfs_blkmap_present.rc == 0
+
+#  https://bugs.launchpad.net/ufw/+bug/1782969
+- name: Fix issue where deprecated nf_conntrack helpers in UFW raise a kernel complaint
+  replace:
+    path: /etc/default/ufw
+    regexp: "^IPT_MODULES=(.+)"
+    replace: "IPT_MODULES="
+    backup: True
+  notify:
+    - reload systemd
+    - restart ufw
+  when: nfs_blkmap_present.rc == 0

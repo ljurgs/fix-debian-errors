@@ -1,0 +1,9 @@
+---
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart nfs-blkmap
+  command: systemctl restart nfs-blkmap
+
+- name: restart ufw
+  command: systemctl restart ufw
