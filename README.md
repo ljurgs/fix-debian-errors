@@ -1,4 +1,4 @@
-Role Name
+ljurgs.fix-debian-errors
 =========
 
 A role that provides workarounds for some annoying but non-serious bugs that result in error messages appearing in the system log in debian family distributions.
