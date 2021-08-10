@@ -1,5 +1,6 @@
 galaxy_info:
   author: ljurgs
+  role_name: fix-debian-errors
   description:  Work-arounds for some annoying but non-serious bugs that result in error messages appearing in the system log
   license: BSD-3-Clause
   min_ansible_version: 2.9
